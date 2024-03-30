@@ -187,7 +187,7 @@ if __name__ == "__main__" :
 
         if (user_option == 1):
             # Giving the user all the resolutions in which he/she can download the video
-
+            print("\nPlease wait until we load all the downloadable video resolutions.")
             available_resolutions = get_available_resolutions_pytube(url)
             if available_resolutions:
                 print("\nAvailable Resolutions:")
@@ -208,6 +208,7 @@ if __name__ == "__main__" :
             file_downloader(url, filename, directory)
 
         elif (user_option == 4):
+            print("\nThis process could take around 30 seconds to 60 seconds.")
             speed_test()
 
         elif (user_option == 5):
