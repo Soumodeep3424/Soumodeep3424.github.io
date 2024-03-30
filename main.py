@@ -78,7 +78,6 @@ def file_downloader(url, output_filename, directory=None):
 # Defining a function which will use the pytube module to download video from video streaming websites
 def youtube_video_downloader(url, output_path=None, filename = None, resolution=None):
     startTime = time.time()
-
     if (output_path == None):
         output_path = os.getcwd()
     else:
@@ -120,9 +119,9 @@ def youtube_music_downloader(url, filename, directory):
     startTime = time.time()
 
     if (filename == ""):
-        filename = url.split('/')[-1]
+        filename = url.split('/')[-1] + '.mp3'
     else:
-        filename = filename
+        filename = filename  + '.mp3'
 
     yt = YouTube(url)
 
@@ -166,6 +165,17 @@ def speed_test():
 if __name__ == "__main__" :
 # We have used try for error handiling
     try:
+        # Giving all the options to the user
+        print("Choose from the following: ")
+        print("Press 1 for downloading Youtube Videos")
+        print("Press 2 for downloading music from Youtube Videos")
+        print("Press 3 for downloading files from normal websites.")
+        print("Press 4 for Interent speed test.")
+        print("Press 5 for Exit.")
+
+        # Asking the user for the ption he/she selected
+        user_option = int(input("Enter your choosed number/option: "))
+        
         # Asking the user for the url where the file is saved
         url = input("Enter the url: ")
 
@@ -175,66 +185,33 @@ if __name__ == "__main__" :
         # Asking the user that where should we save the file
         directory = input("Enter the file path to save the file (nothing for current directory): ")
 
-        # Asking the user for the type of site from wheer we are dowloading the file
-        site = input("From which site you are you downloading from (\"vs\" video streaming or \"else\" for else): ").lower()
+        if (user_option == 1):
+            # Giving the user all the resolutions in which he/she can download the video
 
-        # Asking the user that do you want to perform a internet speed test at first ?
-        speedTest = input("Do you want to perform a speedtest first (y/n)? : ").lower()
-        # asking the user if he/she only wants to download music
-        music = input("Do you only want music ? (y/n) ").lower()
+            available_resolutions = get_available_resolutions_pytube(url)
+            if available_resolutions:
+                print("\nAvailable Resolutions:")
+                for resolution in available_resolutions:
+                    print("Resolution :", resolution)
+            else:
+                print("No available resolutions found.")
 
-        # Defining that if the user wants to see the internet speeds then what to do
-        if (speedTest == "y"):
+            # Asking the user for the video resolution
+            videoResolution = input("Choose a video resolution (nothing for highest video resolution): ")
+
+            youtube_video_downloader(url, directory, filename, videoResolution)
+
+        elif (user_option == 2):
+            youtube_music_downloader(url, filename, directory)
+
+        elif (user_option == 3):
+            file_downloader(url, filename, directory)
+
+        elif (user_option == 4):
             speed_test()
-            if (site == "vs"):
-                # Defining what to do if the user wants to download only music
-                if (music == 'y'):
-                    youtube_music_downloader(url, filename, directory)
-                        
-                # Defining what to do if the user wants to download both video and music
-                        
-                elif (music == 'n'):
-                    # Showing the user all the resolutions avaiable for the video
-                        available_resolutions = get_available_resolutions_pytube(url)
-                        if available_resolutions:
-                            print("\nAvailable Resolutions:")
-                            for resolution in available_resolutions:
-                                print("Resolution :", resolution)
-                        else:
-                            print("No available resolutions found.")
-                    # Asking the user for the video resolution
-                        videoResolution = input("Choose a video resolution (nothing for highest video resolution): ")
-                        # Defining to call the youtube_video_downloader funtion if the site is video streaming
-                        youtube_video_downloader(url, directory, filename, videoResolution)
-            elif (site == "else"):
-                file_downloader(url, filename, directory)
 
-        elif (speedTest == "n"):
-            if (site == "vs"):
-                # Defining what to do if the user wants to download only music
-                if (music == 'y'):
-                    youtube_music_downloader(url, filename, directory)
-                    
-                # Defining what to do if the user wants to download both video and music
-                    
-                elif (music == 'n'):
-                    # Showing the user all the resolutions avaiable for the video
-                        available_resolutions = get_available_resolutions_pytube(url)
-                        if available_resolutions:
-                            print("\nAvailable Resolutions:")
-                            for resolution in available_resolutions:
-                                print("Resolution :", resolution)
-                        else:
-                            print("No available resolutions found.")
-                        # Asking the user for the video resolution
-                        videoResolution = input("Choose a video resolution (nothing for highest video resolution): ")
-                        # Defining to call the youtube_video_downloader funtion if the site is video streaming
-                        youtube_video_downloader(url, directory, filename, videoResolution)
-
-            # Defining to call the file_downloader funtion if the site is else
-            elif (site == 'else'):
-                file_downloader(url, filename, directory)
-
+        elif (user_option == 5):
+            print("Exiting the program ....")
     # Guiding the user to download all the required modules for running the prorgam
     except ModuleNotFoundError:
         print("Dear User, we kindly request you to download and install all the packages required for this program.")
@@ -249,3 +226,5 @@ if __name__ == "__main__" :
     # Printing the error for the user to see that what error is coming
     except Exception as e:
         print(f"Some error occured: {e}")
+    except KeyboardInterrupt:
+        print("KeyBoard Interrupt Found. Exiting ...")
