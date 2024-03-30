@@ -220,7 +220,7 @@ if __name__ == "__main__" :
         elif (user_option == 5):
             print("\nHere they url you pasted should be the url to the playlist.\n")
             vidoes = int(input("How many videos are there in the playlist: "))
-            i = 0
+            i = 1
             while (i <= vidoes):
                 link = url + "&index=" + i
                 youtube_music_downloader(url, filename, directory)
