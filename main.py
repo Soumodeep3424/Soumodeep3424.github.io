@@ -112,6 +112,9 @@ def youtube_video_downloader(url, output_path=None, filename = None, resolution=
     print(f"\nTime taken to download the file is: {timeTaken}")
     print(f"\nVideo Location :{directory}")
 
+    global title
+    title = video.title
+
 # Defining a function which will use the pytube module to download music by extracting it from a video from a video streaming websites
 
 def youtube_music_downloader(url, filename, directory):
@@ -171,6 +174,7 @@ if __name__ == "__main__" :
         print("Press 2 for downloading music from Youtube Videos")
         print("Press 3 for downloading files from normal websites.")
         print("Press 4 for Interent speed test.")
+        print("Press 6 for Dowloading the whole playlist from Youtube.")
         print("Press 5 for Exit.")
 
         # Asking the user for the ption he/she selected
@@ -186,8 +190,10 @@ if __name__ == "__main__" :
         directory = input("Enter the file path to save the file (nothing for current directory): ")
 
         if (user_option == 1):
-            # Giving the user all the resolutions in which he/she can download the video
             print("\nPlease wait until we load all the downloadable video resolutions.")
+            
+            # Giving the user all the resolutions in which he/she can download the video
+
             available_resolutions = get_available_resolutions_pytube(url)
             if available_resolutions:
                 print("\nAvailable Resolutions:")
@@ -212,6 +218,16 @@ if __name__ == "__main__" :
             speed_test()
 
         elif (user_option == 5):
+            print("\nHere they url you pasted should be the url to the playlist.\n")
+            vidoes = int(input("How many videos are there in the playlist: "))
+            i = 0
+            while (i <= vidoes):
+                link = url + "&index=" + i
+                youtube_music_downloader(url, filename, directory)
+                print("\nCurrently downloading the video with the title :", title)
+                i = i + 1
+
+        elif (user_option == 6):
             print("Exiting the program ....")
     # Guiding the user to download all the required modules for running the prorgam
     except ModuleNotFoundError:
