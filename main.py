@@ -8,22 +8,6 @@ import os
 
 # Defining the fuctions
 
-# Defining a function to show the avaiable resolutions for the youtube video
-
-def get_available_resolutions_pytube(url):
-    yt = YouTube(url)
-    streams = yt.streams.filter(progressive=True)
-    resolutions = []
-
-    for stream in streams:
-        resolution = stream.resolution if stream.resolution else "Unknown"
-        video_format = stream.mime_type.split('/')[0]
-        audio_format = stream.mime_type.split('/')[1]
-        resolution_string = f"{resolution} (video: {video_format}, audio: {audio_format})"
-        resolutions.append(resolution_string)
-    
-    return resolutions
-
 # Defining a function to show that how much percentage of the youtube video has been downloaded
 def on_progress_pytube(stream, chunk, bytes_remaining):
     total_size = stream.filesize
@@ -75,6 +59,7 @@ def file_downloader(url, output_filename, directory=None):
         print(f"An error occurred while downloading: {e}")
 
 
+
 # Defining a function which will use the pytube module to download video from video streaming websites
 def youtube_video_downloader(url, output_path=None, filename = None, resolution=None):
     startTime = time.time()
@@ -114,6 +99,48 @@ def youtube_video_downloader(url, output_path=None, filename = None, resolution=
 
     global title
     title = video.title
+
+# Defining a function which will use the pytube module to download all the videos from a playlist from video streaming websites
+
+def youtube_playlist_downloader(playlist_url, playlist_name, output_path, video_resolution):
+
+    os.mkdir(playlist_name)
+
+    playlist_video_location = output_path + '/' + playlist_name
+
+    playlist = Playlist(playlist_url)
+
+
+    # declaring the value of video_download_completed variable to gui
+    video_download_completed = 0
+
+    # Loop through all videos in the playlist and download them
+    for video_url in playlist.video_urls:
+        try:
+            # Download the video with the highest resolution
+            yt = YouTube(video_url)
+            if not video_resolution:
+                stream = yt.streams.get_highest_resolution()
+            else:
+                stream = yt.streams.filter(res = video_resolution)
+                
+            filename = str(video_download_completed) + ". " + filename + '.mp4'
+
+            stream.download(output_path=playlist_video_location, filename=filename) # Change the output path as needed
+            print(f"Video Downloaded: {yt.title}")
+            print(f"Videos left to download: {total_videos - video_download_completed}")
+
+            video_download_completed = video_download_completed + 1
+            print("Percentage of playlist downloaded :", video_download_completed + "%")
+
+        # except Exception as e:
+        #     print("Error downloading the following :")
+        #     print(f"Video URL: {video_url}")
+        #     print(f"\nYoutube Title: {yt.title}")
+        #     print(f"\nException: {e}")
+        except KeyboardInterrupt:
+            print("KeyBoarddd...........")
+
 
 # Defining a function which will use the pytube module to download music by extracting it from a video from a video streaming websites
 
@@ -173,9 +200,9 @@ if __name__ == "__main__" :
         print("Press 1 for downloading Youtube Videos")
         print("Press 2 for downloading music from Youtube Videos")
         print("Press 3 for downloading files from normal websites.")
-        print("Press 4 for Interent speed test.")
-        print("Press 6 for Dowloading the whole playlist from Youtube.")
-        print("Press 5 for Exit.")
+        print("Press 4 for dowloading the whole playlist from Youtube.")
+        print("Press 5 for Interent speed test.")
+        print("Press 6 for Exit.")
 
         # Asking the user for the ption he/she selected
         user_option = int(input("Enter your choosed number/option: "))
@@ -191,19 +218,9 @@ if __name__ == "__main__" :
 
         if (user_option == 1):
             print("\nPlease wait until we load all the downloadable video resolutions.")
-            
-            # Giving the user all the resolutions in which he/she can download the video
-
-            available_resolutions = get_available_resolutions_pytube(url)
-            if available_resolutions:
-                print("\nAvailable Resolutions:")
-                for resolution in available_resolutions:
-                    print("Resolution :", resolution)
-            else:
-                print("No available resolutions found.")
 
             # Asking the user for the video resolution
-            videoResolution = input("Choose a video resolution (nothing for highest video resolution): ")
+            videoResolution = input("Enter the video resolution (nothing for highest video resolution): ")
 
             youtube_video_downloader(url, directory, filename, videoResolution)
 
@@ -214,18 +231,36 @@ if __name__ == "__main__" :
             file_downloader(url, filename, directory)
 
         elif (user_option == 4):
-            print("\nThis process could take around 30 seconds to 60 seconds.")
-            speed_test()
+
+            playlist = Playlist(url)
+
+            # Get the total number of videos in the playlist
+            total_videos = len(playlist.video_urls)
+
+            # Printing the total number of video present in the playlist
+            print(f"\n\nTotal number of videos in the playlist: {total_videos}\n\n")
+
+            # Asking the user that does he/she wants to really download the playlist
+            check = input(f"Do you really wan to download the youtube playlist with {total_videos} (y/n)? : ").lower()
+
+            if (check == 'y'):
+
+                # Asking the user for the video resolution
+                videoResolution = input("Choose a video resolution (nothing for highest video resolution): ")
+
+                # Asking the user for the playlist name
+                playlist_name = input("Enter the playlist name: ")
+
+                print("\nHere the url you pasted should be the url to the playlist.\n")
+                
+                youtube_playlist_downloader(url, playlist_name, directory, videoResolution)
+
+            elif(check == 'n'):
+                print("\nExiting the program .....")
 
         elif (user_option == 5):
-            print("\nHere they url you pasted should be the url to the playlist.\n")
-            vidoes = int(input("How many videos are there in the playlist: "))
-            i = 1
-            while (i <= vidoes):
-                link = url + "&index=" + i
-                youtube_music_downloader(url, filename, directory)
-                print("\nCurrently downloading the video with the title :", title)
-                i = i + 1
+            print("\nThis process could take around 30 seconds to 60 seconds.")
+            speed_test()
 
         elif (user_option == 6):
             print("Exiting the program ....")
