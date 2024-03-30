@@ -226,5 +226,7 @@ if __name__ == "__main__" :
     # Printing the error for the user to see that what error is coming
     except Exception as e:
         print(f"Some error occured: {e}")
+    except TypeError:
+        print("We recommend you to check that you have filled all the feilds correctly or not because this has caused an error.")
     except KeyboardInterrupt:
         print("KeyBoard Interrupt Found. Exiting ...")
