@@ -300,7 +300,7 @@ if __name__ == "__main__" :
         elif (user_option == 4):
                         
             # Asking the user for the url where the file is saved
-            url = input("Enter the url: ")
+            url = input("Enter the url of the playlist: ")
 
             playlist_videos = Playlist(url)
 
@@ -320,8 +320,6 @@ if __name__ == "__main__" :
 
                 # Asking the user for the playlist name
                 playlist_folder = input("Enter the file path where the playlist videos should be saved (nothing means playlist title): ")
-
-                print("\nHere the url you pasted should be the url to the playlist.\n")
                 
                 youtube_playlist_downloader(url, playlist_folder, videoResolution)
 
