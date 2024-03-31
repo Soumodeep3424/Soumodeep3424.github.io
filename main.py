@@ -139,7 +139,7 @@ def youtube_playlist_downloader(playlist_url, playlist_folder=None, resolution=N
         for index, video in enumerate(playlist.videos, start=1):
             video.register_on_progress_callback(on_progress_pytube)
             videoTitle = remove_illegal_characters(video.title)
-            video_title = f"{index:02d}_{videoTitle}.mp4"
+            video_title = f"{index:02d}. {videoTitle}.mp4"
             video_path = os.path.join(playlist_folder, video_title)
             print(f"\n\nCurrently we are dowloading: \"{video_title}\"")
 
