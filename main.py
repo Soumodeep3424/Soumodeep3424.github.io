@@ -15,7 +15,7 @@ def remove_illegal_characters(text):
     # Define a regular expression pattern to match the characters
     pattern = r'[#%&{}\\<>*?/ $!\'":@+`|=]|emojis|alt codes'
     # Use re.sub() to replace all occurrences of the pattern with an empty string
-    cleaned_text = re.sub(pattern, '', text)
+    cleaned_text = re.sub(pattern, ' ', text)
     return cleaned_text
 
 
