@@ -222,7 +222,7 @@ if __name__ == "__main__" :
         print("Press 3 for downloading files from normal websites.")
         print("Press 4 for dowloading the whole playlist from Youtube.")
         print("Press 5 for Interent speed test.")
-        print("Press 6 for Exit.")
+        print("Press 6 for Exit.\n\n")
 
         # Asking the user for the ption he/she selected
         user_option = int(input("Enter your choosed number/option: "))
