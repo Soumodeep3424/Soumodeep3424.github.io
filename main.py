@@ -302,9 +302,6 @@ if __name__ == "__main__" :
             # Asking the user for the url where the file is saved
             url = input("Enter the url: ")
 
-            # Asking the user for the filename by which the file should be saved
-            filename = input("Enter the filename (enter nothing for default filename):")
-
             # Asking the user that where should we save the file
             directory = input("Enter the file path to save the file (nothing for current directory): ")
 
