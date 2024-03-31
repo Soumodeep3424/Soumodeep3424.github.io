@@ -126,7 +126,7 @@ def youtube_playlist_downloader(playlist_url, playlist_folder=None, resolution=N
 
         playlist_title = remove_illegal_characters(playlist.title)
 
-        if not playlist_folder:
+        if (playlist_folder == None):
             playlist_folder = remove_illegal_characters(playlist_title)
         else:
             playlist_folder = playlist_folder
