@@ -145,7 +145,6 @@ def youtube_playlist_downloader(playlist_url, playlist_folder=None, resolution=N
 
             print(f"Downloading '{video.title}'... \n\n")
 
-            videos_downloaded = videos_downloaded + 1
 
             if resolution:
                 stream = video.streams.filter(progressive=True, file_extension='mp4', resolution=resolution).first()
@@ -161,6 +160,7 @@ def youtube_playlist_downloader(playlist_url, playlist_folder=None, resolution=N
             print("\n\nVideos downloaded :", videos_downloaded, "\n")
             playlist_download_progress = total_videos - videos_downloaded
             print("\n\nVideos left to be downloaded :", playlist_download_progress, "\n\n")
+            videos_downloaded = videos_downloaded + 1
         
         print(f"\n\nThe playlist named \"{playlist_title}\" has been downloaded successfully !!")
 
