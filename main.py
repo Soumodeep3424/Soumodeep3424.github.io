@@ -74,6 +74,7 @@ def file_downloader(url, output_filename=None, directory=None):
 
 # Defining a function which will use the pytube module to download video from video streaming websites
 def youtube_video_downloader(url, output_path=None, filename = None, resolution=None):
+
     startTime = time.time()
     if (output_path == None):
         output_path = os.getcwd()
@@ -113,12 +114,23 @@ def youtube_video_downloader(url, output_path=None, filename = None, resolution=
 
 # Defining a function which will use the pytube module to download all the videos from a playlist from video streaming websites
 
-def youtube_playlist_downloader(playlist_url, resolution=None):
+def youtube_playlist_downloader(playlist_url, playlist_name=None, playlist_folder=None, resolution=None):
     try:
+        startTime = time.time()
         videos_downloaded = 1
+
         playlist = Playlist(playlist_url)
-        playlist_title = playlist.title()
-        playlist_folder = remove_illegal_characters(playlist_title)
+
+        print("\n\nPlease, wait while we download your desired playlist.\n\n")
+
+
+        playlist_title = remove_illegal_characters(playlist.title)
+
+        if not playlist_name:
+            playlist_folder = remove_illegal_characters(playlist_title)
+        else:
+            playlist_folder = playlist_folder
+            
         totalVideos = len(playlist.video_urls)
 
         if not os.path.exists(playlist_folder):
@@ -126,12 +138,12 @@ def youtube_playlist_downloader(playlist_url, resolution=None):
 
         for index, video in enumerate(playlist.videos, start=1):
             video.register_on_progress_callback(on_progress_pytube)
-            video_title = f"{index:02d}_{video.title}.mp4"
+            videoTitle = remove_illegal_characters(video.title)
+            video_title = f"{index:02d}_{videoTitle}.mp4"
             video_path = os.path.join(playlist_folder, video_title)
+            print(f"\n\nCurrently we are dowloading: \"{video_title}\"")
 
-            print(f"Downloading '{video.title}'... ", end="")
-
-            print("\n\nDownload Progress of playlist :", (totalVideos - videos_downloaded) * 100)
+            print(f"Downloading '{video.title}'... \n\n")
 
             videos_downloaded = videos_downloaded + 1
 
@@ -141,22 +153,29 @@ def youtube_playlist_downloader(playlist_url, resolution=None):
                 stream = video.streams.filter(progressive=True, file_extension='mp4').first()
             stream.download(output_path=playlist_folder, filename=video_title)
 
-            print(f"\n{video_title} has been downloaded successfully !!")
+            print(f"\n\"{video_title}\" has been downloaded successfully !!")
 
             print("\nThe video location of the video is :", video_path)
+
+
+            print("\n\nVideos downloaded :", videos_downloaded, "\n")
+            playlist_download_progress = total_videos - videos_downloaded
+            print("\n\nVideos left to be downloaded :", playlist_download_progress, "\n\n")
         
         print(f"\n\nThe playlist named \"{playlist_title}\" has been downloaded successfully !!")
 
         location = cwd + '/' + playlist_folder
-        print("The location of the playlist is :", location)
+        print("\n\nThe location of the playlist is :", location)
+        endTime = time.time()
+        timeTaken = endTime - startTime
+        print(f"\n\nime taken to do the speed test is: {timeTaken}\n\n")
+        
 
     except Exception as e:
-        print("Error downloading the following :")
-        print(f"\nVideo Title: {video_title}")
-        print(f"Video URL: {video_title}")
-        print(f"\nException: {e}")
+        print("Error was found.")
+        print("The exception was :", e)
     except KeyboardInterrupt:
-        print("KeyBoarddd...........")
+        print("KeyBoard Interrupt Found. Exiting ...")
 
 
 # Defining a function which will use the pytube module to download music by extracting it from a video from a video streaming websites
@@ -242,9 +261,17 @@ if __name__ == "__main__" :
             # Asking the user for the video resolution
             videoResolution = input("Enter the video resolution (nothing for highest video resolution): ")
 
+            youtube = YouTube(url)
+            youtube_video_title = youtube.title
+            print(f"\nCurrently we are downloading : {youtube_video_title}\n")
+
             youtube_video_downloader(url, directory, filename, videoResolution)
 
         elif (user_option == 2):
+            youtube = YouTube(url)
+            youtube_video_title = youtube.title
+            print(f"\nCurrently we are downloading music from the video : {youtube_video_title}")
+
             youtube_music_downloader(url, filename, directory)
 
         elif (user_option == 3):
@@ -252,10 +279,10 @@ if __name__ == "__main__" :
 
         elif (user_option == 4):
 
-            playlist = Playlist(url)
+            playlist_videos = Playlist(url)
 
             # Get the total number of videos in the playlist
-            total_videos = len(playlist.video_urls)
+            total_videos = len(playlist_videos.video_urls)
 
             # Printing the total number of video present in the playlist
             print(f"\n\nTotal number of videos in the playlist: {total_videos}\n\n")
@@ -269,7 +296,7 @@ if __name__ == "__main__" :
                 videoResolution = input("Choose a video resolution (nothing for highest video resolution): ")
 
                 # Asking the user for the playlist name
-                playlist_name = input("Enter the playlist name: ")
+                playlist_name = input("Enter the playlist name (nothing means playlist title): ")
 
                 print("\nHere the url you pasted should be the url to the playlist.\n")
                 
@@ -299,7 +326,5 @@ if __name__ == "__main__" :
     # Printing the error for the user to see that what error is coming
     except Exception as e:
         print(f"Some error occured: {e}")
-    except TypeError:
-        print("We recommend you to check that you have filled all the feilds correctly or not because this has caused an error.")
     except KeyboardInterrupt:
         print("KeyBoard Interrupt Found. Exiting ...")
