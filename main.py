@@ -302,9 +302,6 @@ if __name__ == "__main__" :
             # Asking the user for the url where the file is saved
             url = input("Enter the url: ")
 
-            # Asking the user that where should we save the file
-            directory = input("Enter the file path to save the file (nothing for current directory): ")
-
             playlist_videos = Playlist(url)
 
             # Get the total number of videos in the playlist
@@ -326,7 +323,7 @@ if __name__ == "__main__" :
 
                 print("\nHere the url you pasted should be the url to the playlist.\n")
                 
-                youtube_playlist_downloader(url, playlist_folder, directory, videoResolution)
+                youtube_playlist_downloader(url, playlist_folder, videoResolution)
 
             elif(check == 'n'):
                 print("\nExiting the program .....")
