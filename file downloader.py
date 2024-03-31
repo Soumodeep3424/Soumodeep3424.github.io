@@ -9,8 +9,35 @@ import re
 
 cwd = os.getcwd()
 
+# Greeting the user and telling hi/she that what this program does
+
+print("Dear user, thank you for choosing our program")
+print("Before you starting using our program we want to first describe that what does our program do. Our program can do the following :\n")
+print("Download videos from YouTube.")
+print("Download playlists from YouTube.")
+print("Download music from YouTube by extracting it from the videos.")
+print("Download a file from normal websites.")
+print("Perform a speed test.")
+
+print("\nSo that now you know that what are program can do, you can choose from one of the below options to perform your tasks.\n")
 # Defining the fuctions
 
+# Defining a function to convert the time
+
+def time_taken(timeTaken):
+        if (timeTaken >= 60): # Converts to minutes
+            timeTaken = timeTaken / 60
+            extension = "Minute(s)"
+        if (timeTaken >= 3600): # Converts to hours
+            timeTaken = timeTaken / 3600
+            extension = "Hour(s)"
+        if (timeTaken >= 86400): # Converts to days
+            timeTaken = timeTaken / 86400
+            extension = "Days(s)"
+        
+        return timeTaken, extension
+
+# defining a function to remove all the characters not accepted in filename
 def remove_illegal_characters(text):
     # Define a regular expression pattern to match the characters
     pattern = r'[#%&{}\\<>*?/ $!\'":@+`|=]|emojis|alt codes'
@@ -32,6 +59,8 @@ def on_progress_pytube(stream, chunk, bytes_remaining):
     
 def file_downloader(url, output_filename=None, directory=None):
     try:
+
+        starttime = time.time()
         response = requests.get(url, stream=True)
         response.raise_for_status()  # Raise an exception for non-200 status codes
 
@@ -67,6 +96,12 @@ def file_downloader(url, output_filename=None, directory=None):
 
             print(f"\nFile Location :{output_path}")
 
+        endtime = time.time()
+        timeTotal = endtime - starttime
+        timeTaken, extension = time_taken(timeTotal)
+        
+        print(f"\n\nTime taken to download the file is: {timeTaken} {extension}\n\n")
+
     except requests.exceptions.RequestException as e:
         print(f"An error occurred while downloading: {e}")
 
@@ -75,9 +110,13 @@ def file_downloader(url, output_filename=None, directory=None):
 # Defining a function which will use the pytube module to download video from video streaming websites
 def youtube_video_downloader(url, output_path=None, filename = None, resolution=None):
 
+    # varaibles which helps to calculate time
     startTime = time.time()
+
+    # Writing code for taking the default file path
     if (output_path == None):
         output_path = os.getcwd()
+    # Writing code for taking the entered file path
     else:
         output_path = output_path
 
@@ -101,14 +140,17 @@ def youtube_video_downloader(url, output_path=None, filename = None, resolution=
         print("\nPlease wait till the video is being dowloaded.\n")
         video.download(output_path)
 
+    # Alerting the user that the video has been downloaded
     print(f"\nDownload complete: {video.title}")
     
-
+    # Calculating the time taken to download the video
     endTime = time.time()
-    timeTaken = endTime - startTime
+    timeTotal = endTime - startTime
+    timeTaken, extension = time_taken(timeTotal)
+        
+    print(f"\n\nTime taken to download the video is: {timeTaken} {extension}\n\n")
 
-    print(f"\nTime taken to download the file is: {timeTaken}")
-
+    # printing the location of the video
     location = output_path + "/" + filename
     print(f"\nVideo Location : {location}")
 
@@ -116,21 +158,26 @@ def youtube_video_downloader(url, output_path=None, filename = None, resolution=
 
 def youtube_playlist_downloader(playlist_url, playlist_folder=None, resolution=None):
     try:
+        # variable help will help to calculate the time taken
         startTime = time.time()
+
+        # variable help will help to calculate that how many videos are downloaded from the playlist
         videos_downloaded = 1
 
         playlist = Playlist(playlist_url)
 
+        # Asking the user to wait till his/her desired playlist is downloaded
         print("\n\nPlease, wait while we download your desired playlist.\n\n")
 
-
+        # defining the playlist's title
         playlist_title = remove_illegal_characters(playlist.title)
 
         if (playlist_folder == None):
             playlist_folder = remove_illegal_characters(playlist_title)
         else:
             playlist_folder = playlist_folder
-            
+        
+        # variable which will help to calculate that how many videos are downloaded
         totalVideos = len(playlist.video_urls)
 
         if not os.path.exists(playlist_folder):
@@ -141,36 +188,54 @@ def youtube_playlist_downloader(playlist_url, playlist_folder=None, resolution=N
             videoTitle = remove_illegal_characters(video.title)
             video_title = f"{index:02d}. {videoTitle}.mp4"
             video_path = os.path.join(playlist_folder, video_title)
-            print(f"\n\nCurrently we are dowloading: \"{video_title}\"")
+            # Printing that which video is being downloaded
+            print(f"\n\n Currently Downloading '{video_title}'... \n\n")
 
-            print(f"Downloading '{video.title}'... \n\n")
-
-
+            # defining that in which resolution should we download the video
             if resolution:
                 stream = video.streams.filter(progressive=True, file_extension='mp4', resolution=resolution).first()
             else:
                 stream = video.streams.filter(progressive=True, file_extension='mp4').first()
             stream.download(output_path=playlist_folder, filename=video_title)
 
+            # Alerting the user that a particular video has been downloaded
             print(f"\n\"{video_title}\" has been downloaded successfully !!")
 
+            # Giving the user the location of the video
             print("\nThe video location of the video is :", video_path)
 
 
+            # Giving the user that how many videos have been downloaded
             print("\n\nVideos downloaded :", videos_downloaded, "\n")
+
+            # Calculating that how many videos are left to be downloaded
             playlist_download_progress = total_videos - videos_downloaded
+
+            # Alerting the user that how many videos are left to be downloaded
             print("\n\nVideos left to be downloaded :", playlist_download_progress, "\n\n")
+
+            # Incremeting the value fo videos_downloaded
             videos_downloaded = videos_downloaded + 1
-        
+            
+        # Alerting the user that the wholke playlist has been successfully downlaoded
         print(f"\n\nThe playlist named \"{playlist_title}\" has been downloaded successfully !!")
 
+        # Calculating the location of the playlist
         location = cwd + '/' + playlist_folder
-        print("\n\nThe location of the playlist is :", location)
-        endTime = time.time()
-        timeTaken = endTime - startTime
-        print(f"\n\nime taken to do the speed test is: {timeTaken}\n\n")
         
-
+        # Giving the user that where the playlist is saved
+        print("\n\nThe location of the playlist is :", location)
+        
+        # Calculating the time taken to download the playlist
+        endTime = time.time()
+        timeTotal = endTime - startTime
+        timeTaken, extension = time_taken(timeTotal)
+            
+        # Giving the user that how muc htime  is taken to download the playlist
+        print(f"\n\nTime taken to download the playlist is: {timeTaken} {extension}\n\n")
+            
+    
+    # Handling errors
     except Exception as e:
         print("Error was found.")
         print("The exception was :", e)
@@ -181,9 +246,11 @@ def youtube_playlist_downloader(playlist_url, playlist_folder=None, resolution=N
 # Defining a function which will use the pytube module to download music by extracting it from a video from a video streaming websites
 
 def youtube_music_downloader(url, filename, directory):
-
+    
+    # variable which will help to calculate the time taken to download the music from the video
     startTime = time.time()
 
+    # Determing the filename
     if (filename == ""):
         filename = url.split('/')[-1] + '.mp3'
     else:
@@ -198,12 +265,18 @@ def youtube_music_downloader(url, filename, directory):
 
     video.download(directory, filename)
 
+    # Calculating the time taken to download the music from the video
     endTime = time.time()
-    timeTaken = endTime - startTime
-    print(f"\nTime taken to download the file is: {timeTaken}")
-    print(f"\nMusic File Location :{directory}")
+    timeTotal = endTime - startTime
+    timeTaken, extension = time_taken(timeTotal)
 
+    # Printing that how much time is taken to download the music from the video
+    print(f"\n\nTime taken to download the music is: {timeTaken} {extension}\n\n")
+
+    # Determing the location of the file
     location = cwd + '/' + filename
+
+    # Alerting the user with th location of the file/music
     print("The music file location is :", location)
 
 
@@ -214,28 +287,39 @@ def speed_test():
     # Create a Speedtest object
     st = speedtest.Speedtest()
     
+    # Printing that the speed test is being done
     print("Running speed test...")
     
+    # Telling the user that the download speed is being calculated
+    print("Calculating the download speed ...")
+
     # Perform download speed test
     download_speed = st.download() / 1024 / 1024  # Convert to Mbps
     
+    # Telling the user that the upload speed is being calculated
+    print("Calculating the upload speed ...")
+
     # Perform upload speed test
     upload_speed = st.upload() / 1024 / 1024  # Convert to Mbps
     
     # Display the results
-    print("Download Speed: {:.2f} Mbps".format(download_speed))
+    print("\nDownload Speed: {:.2f} Mbps".format(download_speed))
     print("Upload Speed: {:.2f} Mbps".format(upload_speed))
     
+    # Calculating the time taken to do the speed test
     endTime = time.time()
-    timeTaken = endTime - startTime
-    print(f"Time taken to do the speed test is: {timeTaken}")
+    timeTotal = endTime - startTime
+    timeTaken, extension = time_taken(timeTotal)
+        
+    # Printing the time taken
+    print(f"\n\nTime taken to do the speed test is: {timeTaken} {extension}\n\n")
 
 
 if __name__ == "__main__" :
 # We have used try for error handiling
     try:
         # Giving all the options to the user
-        print("Choose from the following: ")
+        print("\nChoose from the following: ")
         print("Press 1 for downloading Youtube Videos")
         print("Press 2 for downloading music from Youtube Videos")
         print("Press 3 for downloading files from normal websites.")
@@ -244,7 +328,7 @@ if __name__ == "__main__" :
         print("Press 6 for Exit.\n\n")
 
         # Asking the user for the ption he/she selected
-        user_option = int(input("Enter your choosed number/option: "))
+        user_option = int(input("Enter the number beside your choosed option: "))
 
         if (user_option == 1):
             # Asking the user for the url where the file is saved
@@ -261,8 +345,11 @@ if __name__ == "__main__" :
             # Asking the user for the video resolution
             videoResolution = input("Enter the video resolution (nothing for highest video resolution): ")
 
+            # Receiving the video title to alert the user
             youtube = YouTube(url)
             youtube_video_title = youtube.title
+            
+            # Alerting the user with the video title which is being downloaded by printing it
             print(f"\nCurrently we are downloading : {youtube_video_title}\n")
 
             youtube_video_downloader(url, directory, filename, videoResolution)
@@ -278,10 +365,14 @@ if __name__ == "__main__" :
             # Asking the user that where should we save the file
             directory = input("Enter the file path to save the file (nothing for current directory): ")
 
+            # Receiving the video title to alert the user
             youtube = YouTube(url)
             youtube_video_title = youtube.title
+
+            # Alerting the user with the video title which is being downloaded by printing it
             print(f"\nCurrently we are downloading music from the video : {youtube_video_title}")
 
+            # Giving the details to the youtube_music_downloader function for downloading the music from video
             youtube_music_downloader(url, filename, directory)
 
         elif (user_option == 3):
@@ -295,6 +386,7 @@ if __name__ == "__main__" :
             # Asking the user that where should we save the file
             directory = input("Enter the file path to save the file (nothing for current directory): ")
 
+            # Giving the details to the file_downloader function for downloading file
             file_downloader(url, filename, directory)
 
         elif (user_option == 4):
@@ -307,11 +399,14 @@ if __name__ == "__main__" :
             # Get the total number of videos in the playlist
             total_videos = len(playlist_videos.video_urls)
 
+            # Get the playlist title
+            playlist_title = (playlist_videos.title)
+
             # Printing the total number of video present in the playlist
             print(f"\n\nTotal number of videos in the playlist: {total_videos}\n\n")
 
             # Asking the user that does he/she wants to really download the playlist
-            check = input(f"Do you really wan to download the youtube playlist with {total_videos} (y/n)? : ").lower()
+            check = input(f"Do you really wan to download the youtube playlist \"{playlist_title}\" with {total_videos} videos (y/n)? : ").lower()
 
             if (check == 'y'):
 
@@ -321,17 +416,25 @@ if __name__ == "__main__" :
                 # Asking the user for the playlist name
                 playlist_folder = input("Enter the file path where the playlist videos should be saved (nothing means playlist title): ")
                 
+            # Giving the details to the youtube_playlist_downloader function for downloading playlist
                 youtube_playlist_downloader(url, playlist_folder, videoResolution)
 
+            # Exiting the program if the user does not want to download the playlist
             elif(check == 'n'):
                 print("\nExiting the program .....")
 
+        # Performing a speed test if the user wants to
         elif (user_option == 5):
             print("\nThis process could take around 30 seconds to 60 seconds.")
             speed_test()
 
+        # Exiting the program if the user wants to
         elif (user_option == 6):
             print("Exiting the program ....")
+
+        # Alerting the user that the program has finished its work with some greetings
+        print("Dear user, thank you for using our program.\nWe wise you a good day.")
+
     # Guiding the user to download all the required modules for running the prorgam
     except ModuleNotFoundError:
         print("Dear User, we kindly request you to download and install all the packages required for this program.")
