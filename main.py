@@ -245,17 +245,17 @@ if __name__ == "__main__" :
 
         # Asking the user for the ption he/she selected
         user_option = int(input("Enter your choosed number/option: "))
-        
-        # Asking the user for the url where the file is saved
-        url = input("Enter the url: ")
-
-        # Asking the user for the filename by which the file should be saved
-        filename = input("Enter the filename (enter nothing for default filename):")
-
-        # Asking the user that where should we save the file
-        directory = input("Enter the file path to save the file (nothing for current directory): ")
 
         if (user_option == 1):
+            # Asking the user for the url where the file is saved
+            url = input("Enter the url: ")
+
+            # Asking the user for the filename by which the file should be saved
+            filename = input("Enter the filename (enter nothing for default filename):")
+
+            # Asking the user that where should we save the file
+            directory = input("Enter the file path to save the file (nothing for current directory): ")
+
             print("\nPlease wait until we load all the downloadable video resolutions.")
 
             # Asking the user for the video resolution
@@ -268,6 +268,16 @@ if __name__ == "__main__" :
             youtube_video_downloader(url, directory, filename, videoResolution)
 
         elif (user_option == 2):
+                        
+            # Asking the user for the url where the file is saved
+            url = input("Enter the url: ")
+
+            # Asking the user for the filename by which the file should be saved
+            filename = input("Enter the filename (enter nothing for default filename):")
+
+            # Asking the user that where should we save the file
+            directory = input("Enter the file path to save the file (nothing for current directory): ")
+
             youtube = YouTube(url)
             youtube_video_title = youtube.title
             print(f"\nCurrently we are downloading music from the video : {youtube_video_title}")
@@ -275,9 +285,28 @@ if __name__ == "__main__" :
             youtube_music_downloader(url, filename, directory)
 
         elif (user_option == 3):
+                        
+            # Asking the user for the url where the file is saved
+            url = input("Enter the url: ")
+
+            # Asking the user for the filename by which the file should be saved
+            filename = input("Enter the filename (enter nothing for default filename):")
+
+            # Asking the user that where should we save the file
+            directory = input("Enter the file path to save the file (nothing for current directory): ")
+
             file_downloader(url, filename, directory)
 
         elif (user_option == 4):
+                        
+            # Asking the user for the url where the file is saved
+            url = input("Enter the url: ")
+
+            # Asking the user for the filename by which the file should be saved
+            filename = input("Enter the filename (enter nothing for default filename):")
+
+            # Asking the user that where should we save the file
+            directory = input("Enter the file path to save the file (nothing for current directory): ")
 
             playlist_videos = Playlist(url)
 
