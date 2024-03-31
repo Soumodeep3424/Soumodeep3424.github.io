@@ -114,7 +114,7 @@ def youtube_video_downloader(url, output_path=None, filename = None, resolution=
 
 # Defining a function which will use the pytube module to download all the videos from a playlist from video streaming websites
 
-def youtube_playlist_downloader(playlist_url, playlist_name=None, playlist_folder=None, resolution=None):
+def youtube_playlist_downloader(playlist_url, playlist_folder=None, resolution=None):
     try:
         startTime = time.time()
         videos_downloaded = 1
@@ -126,7 +126,7 @@ def youtube_playlist_downloader(playlist_url, playlist_name=None, playlist_folde
 
         playlist_title = remove_illegal_characters(playlist.title)
 
-        if not playlist_name:
+        if not playlist_folder:
             playlist_folder = remove_illegal_characters(playlist_title)
         else:
             playlist_folder = playlist_folder
@@ -322,11 +322,11 @@ if __name__ == "__main__" :
                 videoResolution = input("Choose a video resolution (nothing for highest video resolution): ")
 
                 # Asking the user for the playlist name
-                playlist_name = input("Enter the playlist name (nothing means playlist title): ")
+                playlist_folder = input("Enter the file path where the playlist videos should be saved (nothing means playlist title): ")
 
                 print("\nHere the url you pasted should be the url to the playlist.\n")
                 
-                youtube_playlist_downloader(url, playlist_name, directory, videoResolution)
+                youtube_playlist_downloader(url, playlist_folder, directory, videoResolution)
 
             elif(check == 'n'):
                 print("\nExiting the program .....")
