@@ -5,8 +5,19 @@ import speedtest
 import requests
 import time
 import os
+import re
+
+cwd = os.getcwd()
 
 # Defining the fuctions
+
+def remove_illegal_characters(text):
+    # Define a regular expression pattern to match the characters
+    pattern = r'[#%&{}\\<>*?/ $!\'":@+`|=]|emojis|alt codes'
+    # Use re.sub() to replace all occurrences of the pattern with an empty string
+    cleaned_text = re.sub(pattern, '', text)
+    return cleaned_text
+
 
 # Defining a function to show that how much percentage of the youtube video has been downloaded
 def on_progress_pytube(stream, chunk, bytes_remaining):
@@ -19,7 +30,7 @@ def on_progress_pytube(stream, chunk, bytes_remaining):
 
 # Defining a function which will use the requests module to download data from normal websites
     
-def file_downloader(url, output_filename, directory=None):
+def file_downloader(url, output_filename=None, directory=None):
     try:
         response = requests.get(url, stream=True)
         response.raise_for_status()  # Raise an exception for non-200 status codes
@@ -31,7 +42,7 @@ def file_downloader(url, output_filename, directory=None):
         if not output_filename:
             filename = os.path.basename(url)  # Extract filename from URL
         if not filename:
-            filename = "download"  # Default filename if no name in URL
+            filename = "Downloaded File"  # Default filename if no name in URL
 
         # Construct the full output path
         if directory:
@@ -53,7 +64,8 @@ def file_downloader(url, output_filename, directory=None):
             # Calculate and display download progress
             percentage_complete = (downloaded_bytes / total_size) * 100
             print(f"Download Progress: {percentage_complete:.2f}%", end='\r')  # Print progress on same line
-            print(f"\nFile Location :{directory}")
+
+            print(f"\nFile Location :{output_path}")
 
     except requests.exceptions.RequestException as e:
         print(f"An error occurred while downloading: {e}")
@@ -95,51 +107,56 @@ def youtube_video_downloader(url, output_path=None, filename = None, resolution=
     timeTaken = endTime - startTime
 
     print(f"\nTime taken to download the file is: {timeTaken}")
-    print(f"\nVideo Location :{directory}")
 
-    global title
-    title = video.title
+    location = output_path + "/" + filename
+    print(f"\nVideo Location : {location}")
 
 # Defining a function which will use the pytube module to download all the videos from a playlist from video streaming websites
 
-def youtube_playlist_downloader(playlist_url, playlist_name, output_path, video_resolution):
+def youtube_playlist_downloader(playlist_url, resolution=None):
+    try:
+        videos_downloaded = 1
+        playlist = Playlist(playlist_url)
+        playlist_title = playlist.title()
+        playlist_folder = remove_illegal_characters(playlist_title)
+        totalVideos = len(playlist.video_urls)
 
-    os.mkdir(playlist_name)
+        if not os.path.exists(playlist_folder):
+            os.makedirs(playlist_folder)
 
-    playlist_video_location = output_path + '/' + playlist_name
+        for index, video in enumerate(playlist.videos, start=1):
+            video.register_on_progress_callback(on_progress_pytube)
+            video_title = f"{index:02d}_{video.title}.mp4"
+            video_path = os.path.join(playlist_folder, video_title)
 
-    playlist = Playlist(playlist_url)
+            print(f"Downloading '{video.title}'... ", end="")
 
+            print("\n\nDownload Progress of playlist :", (totalVideos - videos_downloaded) * 100)
 
-    # declaring the value of video_download_completed variable to gui
-    video_download_completed = 0
+            videos_downloaded = videos_downloaded + 1
 
-    # Loop through all videos in the playlist and download them
-    for video_url in playlist.video_urls:
-        try:
-            # Download the video with the highest resolution
-            yt = YouTube(video_url)
-            if not video_resolution:
-                stream = yt.streams.get_highest_resolution()
+            if resolution:
+                stream = video.streams.filter(progressive=True, file_extension='mp4', resolution=resolution).first()
             else:
-                stream = yt.streams.filter(res = video_resolution)
-                
-            filename = str(video_download_completed) + ". " + filename + '.mp4'
+                stream = video.streams.filter(progressive=True, file_extension='mp4').first()
+            stream.download(output_path=playlist_folder, filename=video_title)
 
-            stream.download(output_path=playlist_video_location, filename=filename) # Change the output path as needed
-            print(f"Video Downloaded: {yt.title}")
-            print(f"Videos left to download: {total_videos - video_download_completed}")
+            print(f"\n{video_title} has been downloaded successfully !!")
 
-            video_download_completed = video_download_completed + 1
-            print("Percentage of playlist downloaded :", video_download_completed + "%")
+            print("\nThe video location of the video is :", video_path)
+        
+        print(f"\n\nThe playlist named \"{playlist_title}\" has been downloaded successfully !!")
 
-        # except Exception as e:
-        #     print("Error downloading the following :")
-        #     print(f"Video URL: {video_url}")
-        #     print(f"\nYoutube Title: {yt.title}")
-        #     print(f"\nException: {e}")
-        except KeyboardInterrupt:
-            print("KeyBoarddd...........")
+        location = cwd + '/' + playlist_folder
+        print("The location of the playlist is :", location)
+
+    except Exception as e:
+        print("Error downloading the following :")
+        print(f"\nVideo Title: {video_title}")
+        print(f"Video URL: {video_title}")
+        print(f"\nException: {e}")
+    except KeyboardInterrupt:
+        print("KeyBoarddd...........")
 
 
 # Defining a function which will use the pytube module to download music by extracting it from a video from a video streaming websites
@@ -166,6 +183,9 @@ def youtube_music_downloader(url, filename, directory):
     timeTaken = endTime - startTime
     print(f"\nTime taken to download the file is: {timeTaken}")
     print(f"\nMusic File Location :{directory}")
+
+    location = cwd + '/' + filename
+    print("The music file location is :", location)
 
 
 
@@ -274,6 +294,7 @@ if __name__ == "__main__" :
         print("OS - It is a built-in module")
         print("Time - It is a built-in module")
         print("Requests - It is a built-in module")
+        print("Re - It is a built-in module")
 
     # Printing the error for the user to see that what error is coming
     except Exception as e:
