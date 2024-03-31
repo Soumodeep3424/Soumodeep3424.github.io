@@ -39,12 +39,36 @@ def time_taken(timeTaken):
 
 # defining a function to remove all the characters not accepted in filename
 def remove_illegal_characters(text):
-    # Define a regular expression pattern to match the characters
-    pattern = r'[#%&{}\\<>*?/ $!\'":@+`|=]|emojis|alt codes'
-    # Use re.sub() to replace all occurrences of the pattern with an empty string
-    cleaned_text = re.sub(pattern, ' ', text)
-    return cleaned_text
+    # Define a regular expression pattern to match emojis
+    emoji_pattern = re.compile("["
+        u"\U0001F600-\U0001F64F"  # emoticons
+        u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+        u"\U0001F680-\U0001F6FF"  # transport & map symbols
+        u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+        u"\U00002500-\U00002BEF"  # chinese char
+        u"\U00002702-\U000027B0"
+        u"\U00002702-\U000027B0"
+        u"\U000024C2-\U0001F251"
+        u"\U0001f926-\U0001f937"
+        u"\U00010000-\U0010ffff"
+        u"\u2640-\u2642"
+        u"\u2600-\u2B55"
+        u"\u200d"
+        u"\u23cf"
+        u"\u23e9"
+        u"\u231a"
+        u"\ufe0f"  # dingbats
+        u"\u3030"
+        "]+", flags=re.UNICODE)
+    
+    # Define a regular expression pattern to match illegal characters
+    illegal_pattern = re.compile(r"[#%&{}\\<>*?/$!'\":@+`|=\s]+")
 
+    # Remove emojis and illegal characters from the text
+    cleaned_text = emoji_pattern.sub('', text)
+    cleaned_text = illegal_pattern.sub(' ', cleaned_text)
+    
+    return cleaned_text
 
 # Defining a function to show that how much percentage of the youtube video has been downloaded
 def on_progress_pytube(stream, chunk, bytes_remaining):
