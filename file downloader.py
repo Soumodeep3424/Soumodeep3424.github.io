@@ -457,7 +457,7 @@ if __name__ == "__main__" :
             print("Exiting the program ....")
 
         # Alerting the user that the program has finished its work with some greetings
-        print("Dear user, thank you for using our program.\nWe wise you a good day.")
+        print("Dear user, thank you for using our program.\nWe wish you a good day.")
 
     # Guiding the user to download all the required modules for running the prorgam
     except ModuleNotFoundError:
